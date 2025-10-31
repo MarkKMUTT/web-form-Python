@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Data Entry</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form, table { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        input[type="text"], input[type="date"], input[type="number"] { padding: 8px; margin: 5px 0; display: block; width: 100%; box-sizing: border-box; }
+        button { padding: 10px 15px; margin-right: 10px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #5ca4b1; }
+        .summary { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>📝 บันทึกข้อมูลการผลิต</h2>
+
+    <form method="POST" id="data-form">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        
+        <label for="line">Line:</label>
+        <input type="text" id="line" name="line" required>
+        
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" required>
+        
+        <label for="qty">QTY:</label>
+        <input type="number" id="qty" name="qty" required min="1">
+        <button type="submit" name="submit">✅ Input</button>
+        <button type="reset" style="background-color: #f44336; color: white;">🗑️ Clear Form</button>
+    </form>
+    
+    
+    <h2>📊 Table Report</h2>
+    <div class="summary">
+        ข้อมูลสรุป: จำนวนรายการทั้งหมด = {{ records|length }}, รวม QTY ทั้งหมด = {{ total_qty_backend|int }}
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Line</th>
+                <th>Model</th>
+                <th>QTY</th>
+                <th>Action</th> </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.date }}</td>
+                <td>{{ record.line }}</td>
+                <td>{{ record.model }}</td>
+                <td>{{ record.qty }}</td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="delete_index" value="{{ loop.index0 }}">
+                        <button type="submit" style="padding: 5px 10px; background-color: #ff9800; color: white;">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        //นำ JavaScript ช่วยปรับให้กรอกวันที่ด้วยการเลือกปฎิทินเท่านั้นเพื่อไม่ให้ผู้ใช้กรอกวันที่ไม่มีอยู่จริง
+        // ฟังก์ชันนี้จะทำงานเมื่อหน้าเว็บโหลดเสร็จสมบูรณ์
+        document.addEventListener('DOMContentLoaded', (event) => {
+        const dateInput = document.getElementById('date');
+
+        // เมื่อผู้ใช้คลิก (focus) ที่ช่อง Date
+        dateInput.addEventListener('focus', () => {
+        // ตรวจสอบว่าเบราว์เซอร์รองรับฟังก์ชัน showPicker() หรือไม่
+        if ('showPicker' in dateInput) {
+        // สั่งให้แสดงปฏิทินทันที
+        dateInput.showPicker();
+        } else {
+        // สำหรับเบราว์เซอร์เก่าที่ไม่รองรับ showPicker
+        dateInput.click(); // อาจจะช่วยกระตุ้นการแสดงปฏิทิน
+        }
+        });
+        });
+    </script>    
